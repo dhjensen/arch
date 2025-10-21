@@ -4,181 +4,148 @@
     state: directory
     mode: "0755"
 
-- name: Copy xmonad hook
-  ansible.builtin.template:
-    src: xmonad.hook.j2
-    dest: /etc/pacman.d/hooks/xmonad.hook
-    mode: "0644"
-
-- name: Copy configuration files
-  ansible.builtin.copy:
-    src: "{{ item }}"
-    dest: /home/{{ host.user.wheel.name }}/
-    mode: "0644"
-    group: "{{ host.user.wheel.name }}"
-    owner: "{{ host.user.wheel.name }}"
+- name: Enable pacman multilib repo
+  ansible.builtin.lineinfile:
+    path: /etc/pacman.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    insertbefore: "# An example of a custom package repository.  See the pacman manpage for"
   with_items:
-    - .alacritty.yml
-    - .bash_login.d
-    - .config
-    - .xinitrc
-    - .xmonad
-    - .Xresources
-
-- name: Copy bin files
-  ansible.builtin.copy:
-    src: bin
-    dest: /home/{{ host.user.wheel.name }}/
-    mode: "0755"
-    group: "{{ host.user.wheel.name }}"
-    owner: "{{ host.user.wheel.name }}"
+    - regexp: "^\\[multilib\\]|#\\[multilib\\]$"
+      line: "[multilib]"
+    - regexp: "^Include|#Include = /etc/pacman.d/mirrorlist$"
+      line: "Include = /etc/pacman.d/mirrorlist"
 
 - name: Install packages
   community.general.pacman:
     name:
-      - alacritty
-      - calibre
-      - chromium
-      - dmenu
-      - dunst
-      - fontconfig
-      - gimp
-      - gnome-keyring
-      - keepassxc
-      - libxkbcommon
-      - libnotify
-      - maim
-      - mate-calc
-      - numlockx
-      - ttf-dejavu
-      - xcompmgr
-      - xmonad
-      - xmonad-contrib
-      - xorg-server
-      - xorg-xinit
-    update_cache: true
+      - sddm
+      - plasma-meta
+      - kde-applications-meta
+      - networkmanager
+      - wayland
+      # - packagekit-qt6 # Support for pacman in discover is not good so dont install packagekit-qt6 yet
+      - gnupg
+      - code
+      - xdg-desktop-portal
+      - xdg-desktop-portal-kde
+      - flatpak
+      - bitwarden
+      - hyfetch
+      - macchina
+      - libpcap
+      - bash-completion
+      - croc
+      - wireguard-tools
+      - qbittorrent
+      - discord
+      - element-desktop
+      - bluez-utils
+      - fprintd
+      - tuned-ppd
 
-- name: Copy xorg files
-  ansible.builtin.copy:
-    src: xorg.conf.d
-    dest: /usr/share/X11/
-    mode: "0644"
+- name: Install AUR packages
+  kewlfft.aur.aur:
+    name:
+      - evdi-dkms
+      - displaylink
+      - yay
+      - google-chrome
+      - ventoy-bin
+      - vagrant
+      - infisical-bin
+      - dell-command-configure
+      - kuro
+      # - onedrivegui # Can be installed when the maintainer fix the dependency versions
+      - onedrive-abraunegg
+      - autotrace-git
+  become: true
+  become_user: "{{ host.user.wheel.name }}"
 
-- name: Create Xresources directory
+- name: Install flatpak apps
+  community.general.flatpak:
+    name:
+      - me.proton.Mail
+      - net.cozic.joplin_desktop
+      - org.onlyoffice.desktopeditors
+    state: present
+
+- name: Install nodejs packages
+  community.general.npm:
+    global: true
+    name: dclint
+    state: latest
+
+- name: Create directories
   ansible.builtin.file:
-    path: /home/{{ host.user.wheel.name }}/.Xresources.d
+    path: "{{ item.path }}"
     state: directory
-    mode: "0755"
-    group: "{{ host.user.wheel.name }}"
-    owner: "{{ host.user.wheel.name }}"
+    mode: "{{ item.mode }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+  with_items:
+    - path: /etc/sddm.conf.d/
+      mode: u+w,ugo+rx
+      owner: root
+      group: root
+    - path: "/home/{{ host.user.wheel.name }}/.local/bin"
+      mode: u+w
+      owner: "{{ host.user.wheel.name }}"
+      group: wheel
 
-- name: Add xft settings
-  ansible.builtin.template:
-    src: xft.j2
-    dest: /home/{{ host.user.wheel.name }}/.Xresources.d/xft
-    mode: "0644"
-    group: "{{ host.user.wheel.name }}"
-    owner: "{{ host.user.wheel.name }}"
+- name: Download albiondata-client
+  ansible.builtin.get_url:
+    dest: ~/Hentet/update-linux-amd64.gz
+    url: https://github.com/ao-data/albiondata-client/releases/latest/download/update-linux-amd64.gz
+    mode: u+r
+  become: true
+  become_user: "{{ host.user.wheel.name }}"
 
-- name: Add backlight udev rules
+- name: Unpack albiondata-client
+  ansible.builtin.shell:
+    cmd: gzip -dc < ~/Hentet/update-linux-amd64.gz > ~/.local/bin/albiondata-client
+    creates: ~/.local/bin/albiondata-client
+  become: true
+  become_user: "{{ host.user.wheel.name }}"
+
+- name: Set albiondata-client execution permission
+  ansible.builtin.file:
+    mode: u+x
+    path: ~/.local/bin/albiondata-client
+  become: true
+  become_user: "{{ host.user.wheel.name }}"
+
+- name: Allow albiondata-client to capture data
+  community.general.capabilities:
+    capability: "{{ item }}"
+    path: ~/.local/bin/albiondata-client
+    state: present
+  with_items:
+    - cap_net_raw=eip
+    - cap_net_admin=eip
+
+- name: Copy configuration files
   ansible.builtin.copy:
-    src: rules.d
-    dest: /etc/udev/
-    mode: "0644"
+    src: "{{ item }}"
+    dest: /etc/sddm.conf.d/
+    mode: u+w,ugo+rx
+  with_items:
+    - etc/sddm.conf.d/wayland.conf
+
+- name: Enable services
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    enabled: true
+  with_items:
+    - sddm.service
+    - firewalld.service
+    - NetworkManager.service
+    - pacman-filesdb-refresh.timer
+    - docker.service
+    - bluetooth.service
 
 - name: Add user to video group
   ansible.builtin.user:
     name: "{{ host.user.wheel.name }}"
     groups: video
     append: true
-
-- name: Enable xmonad service
-  become: true
-  become_user: "{{ host.user.wheel.name }}"
-  become_method: community.general.machinectl
-  ansible.builtin.systemd:
-    daemon_reload: true
-    scope: user
-    name: xmonad
-    enabled: true
-
-- name: Enable xrdb service
-  become: true
-  become_user: "{{ host.user.wheel.name }}"
-  become_method: community.general.machinectl
-  ansible.builtin.systemd:
-    daemon_reload: true
-    scope: user
-    name: xrdb
-    enabled: true
-
-- name: Enable numlock service
-  become: true
-  become_user: "{{ host.user.wheel.name }}"
-  become_method: community.general.machinectl
-  ansible.builtin.systemd:
-    daemon_reload: true
-    scope: user
-    name: numlock
-    enabled: true
-
-- name: Enable gnome-keyring service
-  become: true
-  become_user: "{{ host.user.wheel.name }}"
-  become_method: community.general.machinectl
-  ansible.builtin.systemd:
-    daemon_reload: true
-    scope: user
-    name: gnome-keyring
-    enabled: true
-
-- name: Enable gcr ssh agent
-  become: true
-  become_user: "{{ host.user.wheel.name }}"
-  become_method: community.general.machinectl
-  ansible.builtin.systemd:
-    daemon_reload: true
-    scope: user
-    name: gcr-ssh-agent.socket
-    enabled: true
-
-- name: Enable xcompmgr service
-  become: true
-  become_user: "{{ host.user.wheel.name }}"
-  become_method: community.general.machinectl
-  ansible.builtin.systemd:
-    daemon_reload: true
-    scope: user
-    name: xcompmgr
-    enabled: true
-
-- name: Enable battery service
-  become: true
-  become_user: "{{ host.user.wheel.name }}"
-  become_method: community.general.machinectl
-  ansible.builtin.systemd:
-    daemon_reload: true
-    scope: user
-    name: battery
-    enabled: true
-
-- name: Enable battery timer
-  become: true
-  become_user: "{{ host.user.wheel.name }}"
-  become_method: community.general.machinectl
-  ansible.builtin.systemd:
-    daemon_reload: true
-    scope: user
-    name: battery.timer
-    enabled: true
-
-- name: Start systemd-tmpfiles
-  become: true
-  become_user: "{{ host.user.wheel.name }}"
-  become_method: community.general.machinectl
-  ansible.builtin.systemd:
-    daemon_reload: true
-    scope: user
-    name: systemd-tmpfiles-clean.timer
-    state: started
-    enabled: true

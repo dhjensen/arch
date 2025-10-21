@@ -52,9 +52,11 @@
 - name: Install packages
   community.general.pacman:
     name:
+      - git
       - base-devel
       - pacman-contrib
       - terminus-font
+      - sudo
 
 - name: Copy paccache hook
   ansible.builtin.copy:
@@ -81,7 +83,7 @@
     dest: /etc/vconsole.conf
     mode: "0644"
 
-- name: Create systemd directory for custom servies
+- name: Create systemd directory for custom services
   ansible.builtin.file:
     path: /usr/local/lib/systemd/system/
     state: directory
@@ -99,13 +101,6 @@
     src: resolved.conf.d
     dest: /etc/systemd/
     mode: "0644"
-
-- name: Enable fstrim timer
-  ansible.builtin.systemd:
-    state: started
-    name: fstrim.timer
-    enabled: true
-    daemon_reload: true
 
 - name: Enable fstrim timer
   ansible.builtin.systemd:
