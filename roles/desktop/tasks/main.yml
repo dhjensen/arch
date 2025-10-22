@@ -22,6 +22,8 @@
       - sddm
       - plasma-meta
       - kde-applications-meta
+      - libappindicator-gtk3
+      - python-gpgme
       - networkmanager
       - wayland
       # - packagekit-qt6 # Support for pacman in discover is not good so dont install packagekit-qt6 yet
@@ -58,6 +60,7 @@
       - kuro
       # - onedrivegui # Can be installed when the maintainer fix the dependency versions
       - onedrive-abraunegg
+      - dropbox
       - autotrace-git
   become: true
   become_user: "{{ host.user.wheel.name }}"
@@ -143,6 +146,14 @@
     - pacman-filesdb-refresh.timer
     - docker.service
     - bluetooth.service
+
+- name: Enable user services
+  ansible.builtin.systemd_service:
+    name: dropbox.service
+    enabled: true
+    scope: user
+  become: true
+  become_user: "{{ host.user.wheel.name }}"
 
 - name: Add user to video group
   ansible.builtin.user:
