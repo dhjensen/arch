@@ -71,6 +71,7 @@
       - me.proton.Mail
       - net.cozic.joplin_desktop
       - org.onlyoffice.desktopeditors
+      - com.axosoft.GitKraken
     state: present
 
 - name: Install nodejs packages
