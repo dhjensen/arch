@@ -1,9 +1,8 @@
-- name: Refresh pacman cache
+- name: Install pacman packages
   community.general.pacman:
     name:
       - cups
       - cups-pdf
-    update_cache: true
 
 - name: Install brother driver
   kewlfft.aur.aur:
@@ -11,14 +10,7 @@
   become: true
   become_user: "{{ host.user.wheel.name }}"
 
-- name: Copy cups files
-  ansible.builtin.copy:
-    src: cups/
-    dest: /etc/cups/
-    mode: "0644"
-
-- name: Start cups service
+- name: Enable cups service
   ansible.builtin.systemd:
-    state: started
     name: cups
     enabled: true
