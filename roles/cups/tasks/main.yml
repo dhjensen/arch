@@ -3,6 +3,7 @@
     name:
       - cups
       - cups-pdf
+      - system-config-printer
 
 - name: Install brother driver
   kewlfft.aur.aur:

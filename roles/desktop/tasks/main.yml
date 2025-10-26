@@ -131,11 +131,14 @@
 
 - name: Copy configuration files
   ansible.builtin.copy:
-    src: "{{ item }}"
-    dest: /etc/sddm.conf.d/
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
     mode: u+w,ugo+rx
   with_items:
-    - etc/sddm.conf.d/wayland.conf
+    - src: etc/sddm.conf.d/wayland.conf
+      dest: /etc/sddm.conf.d/
+    - src: var/lib/AccountsService/users/user
+      dest: /var/lib/AccountsService/users/{{ host.user.wheel.name }}
 
 - name: Enable services
   ansible.builtin.systemd_service:
