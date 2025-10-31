@@ -64,6 +64,10 @@
       - autotrace-git
       - anydesk-bin
       - htpasswd
+      # - proton-mail # Build fails
+      - joplin-desktop
+      - onlyoffice-bin
+      - gitkraken
   become: true
   become_user: "{{ host.user.wheel.name }}"
 
@@ -71,9 +75,9 @@
   community.general.flatpak:
     name:
       - me.proton.Mail
-      - net.cozic.joplin_desktop
-      - org.onlyoffice.desktopeditors
-      - com.axosoft.GitKraken
+      # - com.axosoft.GitKraken
+      # - net.cozic.joplin_desktop
+      # - org.onlyoffice.desktopeditors
     state: present
 
 - name: Install nodejs packages
@@ -166,7 +170,6 @@
     scope: user
   with_items:
     - dropbox.service
-    - lumo.service
   become: true
   become_user: "{{ host.user.wheel.name }}"
 
