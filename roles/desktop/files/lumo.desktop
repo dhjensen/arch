@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Lumo (PWA)
+Comment=Proton Lumo AI – installed as a Progressive Web App
+Exec=google-chrome-stable --app=https://lumo.proton.me
+Icon=lumo-pwa
+Terminal=false
+Type=Application
+Categories=Network;Chat;
+StartupNotify=true

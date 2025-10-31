@@ -63,6 +63,7 @@
       - dropbox
       - autotrace-git
       - anydesk-bin
+      - htpasswd
   become: true
   become_user: "{{ host.user.wheel.name }}"
 
@@ -129,7 +130,7 @@
     - cap_net_raw=eip
     - cap_net_admin=eip
 
-- name: Copy configuration files
+- name: Copy files
   ansible.builtin.copy:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
@@ -139,6 +140,12 @@
       dest: /etc/sddm.conf.d/
     - src: var/lib/AccountsService/users/user
       dest: /var/lib/AccountsService/users/{{ host.user.wheel.name }}
+    - src: lumo.png
+      dest: /usr/share/pixmaps/lumo-pwa.png
+    - src: lumo.desktop
+      dest: /usr/share/applications/lumo-pwa.desktop
+    - src: lumo.service
+      dest: "/home/{{ host.user.wheel.name }}/.config/systemd/user"
 
 - name: Enable services
   ansible.builtin.systemd_service:
@@ -154,9 +161,12 @@
 
 - name: Enable user services
   ansible.builtin.systemd_service:
-    name: dropbox.service
+    name: "{{ item }}"
     enabled: true
     scope: user
+  with_items:
+    - dropbox.service
+    - lumo.service
   become: true
   become_user: "{{ host.user.wheel.name }}"
 
