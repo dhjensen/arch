@@ -1,0 +1,49 @@
+host:
+  alsa:
+    modprobe:
+  boot:
+    network:
+      - name: ethernet
+        contents:
+          Match:
+            Name: enp8s0
+          Network:
+            DHCP: true
+          DHCP:
+            RouteMetric: 10
+  dir: /mnt
+  disk:
+    # dev: /dev/vda
+    # prefix: 
+    # partitions:
+    #   - index: 1
+    #     size: +1M
+    #   - index: 2
+    #     fstype: vfat
+    #     signature: 1
+    #     opts: -F32 -L EFE
+    #     size: +512M
+    #     mounts:
+    #       - path: /
+    #         opts: defaults
+  system:
+    charset: UTF-8
+    font: ter-u32n
+    keymap: dk-latin1
+    locale: da_DK.UTF-8
+    modprobe: []
+    mirrors:
+      - https://mirrors.dotsrc.org/archlinux/$repo/os/$arch
+      - https://mirror.group.one/archlinux/$repo/os/$arch
+      - https://mirror.it-privat.dk/arch/$repo/os/$arch
+    ntp: dk.pool.ntp.org
+    timezone: Europe/Copenhagen
+  user:
+    autologin: false
+    ssh_agent: false
+    root:
+      name: root
+      password: $6$QBNUFGpFj1L7vuyg$To6O/a9dlc4NNcLg/qMidSu7SQR7z8EaHSAfpSdEbdYG8XIBsNVE/0u72I.3atj600sie5ByJSwt8j8A.qA/W0
+    wheel:
+      name: dhj
+      password: $6$VJP3GmoyJJEWc8Kx$zwp4QQqYs/HVuQ.ypug4ll4tRosOqPyuT2STbzMwvAraJAK4Ng68NJmeIL6nOkJ/ZVCDvWcJI1Ht3OHukGdWK1

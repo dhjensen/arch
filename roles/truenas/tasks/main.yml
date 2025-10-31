@@ -1,0 +1,12 @@
+- name: Change timezone
+  ansible.builtin.file:
+    src: /usr/share/zoneinfo/{{ host.system.timezone }}
+    dest: /etc/localtime
+    state: link
+
+- name: Create admin user
+  arensb.truenas.user:
+    name: dhj
+    state: present
+    email: dhj@dhjensen.dk
+    password: "Test1234"

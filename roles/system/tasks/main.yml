@@ -4,26 +4,31 @@
     dest: /etc/localtime
     state: link
     force: true
+  when: ansible_facts['distribution'] == "Archlinux"
 
 - name: Create timesyncd directory
   ansible.builtin.file:
     path: /etc/systemd/timesyncd.conf.d/
     state: directory
     mode: "0755"
+  when: ansible_facts['distribution'] == "Archlinux"
 
 - name: Update timesyncd configuration
   ansible.builtin.template:
     src: timesyncd.conf.j2
     dest: /etc/systemd/timesyncd.conf.d/timesyncd.conf
     mode: "0644"
+  when: ansible_facts['distribution'] == "Archlinux"
 
 - name: Enable timedatectl ntp client
   ansible.builtin.command: timedatectl set-ntp true
   changed_when: true
+  when: ansible_facts['distribution'] == "Archlinux"
 
 - name: Set locale
   community.general.locale_gen:
     name: "{{ host.system.locale }}"
+  when: ansible_facts['distribution'] == "Archlinux"
 
 - name: Set LANG variable
   ansible.builtin.lineinfile:
@@ -31,22 +36,26 @@
     path: /etc/locale.conf
     line: LANG={{ host.system.locale }}
     mode: "0644"
+  when: ansible_facts['distribution'] == "Archlinux"
 
 - name: Set pacman mirrors
   ansible.builtin.template:
     src: mirrorlist.j2
     dest: /etc/pacman.d/mirrorlist
     mode: "0644"
+  when: ansible_facts['distribution'] == "Archlinux"
 
 - name: Update pacman configuration
   ansible.builtin.lineinfile:
     path: /etc/pacman.conf
     regexp: ^#Color
     line: Color
+  when: ansible_facts['distribution'] == "Archlinux"
 
 - name: Update pacman package cache
   community.general.pacman:
     update_cache: true
+  when: ansible_facts['distribution'] == "Archlinux"
 
 - name: Install packages
   community.general.pacman:
@@ -57,12 +66,14 @@
       - terminus-font
       - sudo
       - plocate
+  when: ansible_facts['distribution'] == "Archlinux"
 
 - name: Copy paccache hook
   ansible.builtin.copy:
     src: pacman.d
     dest: /etc/
     mode: "0644"
+  when: ansible_facts['distribution'] == "Archlinux"
 
 - name: Add modprobe changes
   ansible.builtin.template:
@@ -76,18 +87,21 @@
     src: hosts
     dest: /etc/
     mode: "0644"
+  when: ansible_facts['distribution'] == "Archlinux"
 
 - name: Add vconsole
   ansible.builtin.template:
     src: vconsole.conf.j2
     dest: /etc/vconsole.conf
     mode: "0644"
+  when: ansible_facts['distribution'] == "Archlinux"
 
 - name: Create systemd directory for custom services
   ansible.builtin.file:
     path: /usr/local/lib/systemd/system/
     state: directory
     mode: "0755"
+  when: ansible_facts['distribution'] == "Archlinux"
 
 - name: Make systemd-resolved to manage resolve.conf
   ansible.builtin.file:
@@ -95,12 +109,14 @@
     dest: /etc/resolv.conf
     state: link
     force: true
+  when: ansible_facts['distribution'] == "Archlinux"
 
 - name: Add systemd-resolved changes
   ansible.builtin.copy:
     src: resolved.conf.d
     dest: /etc/systemd/
     mode: "0644"
+  when: ansible_facts['distribution'] == "Archlinux"
 
 - name: Enable fstrim timer
   ansible.builtin.systemd:
@@ -108,8 +124,10 @@
     name: fstrim.timer
     enabled: true
     daemon_reload: true
+  when: ansible_facts['distribution'] == "Archlinux"
 
 - name: Set a hostname
   ansible.builtin.hostname:
     name: "{{ inventory_hostname_short }}"
     use: systemd
+  when: ansible_facts['distribution'] == "Archlinux"

@@ -6,6 +6,7 @@
       - gcc
       - make
       - sudo
+  when: ansible_facts['distribution'] == "Archlinux"
 
 - name: Create user and add to wheel group
   ansible.builtin.user:
@@ -14,6 +15,7 @@
     groups: wheel
     append: true
     password: "{{ host.user.wheel.password }}"
+  when: ansible_facts['distribution'] == "Archlinux"
 
 - name: Allow wheel group to execute any command
   ansible.builtin.lineinfile:
@@ -21,8 +23,10 @@
     regexp: "^# %wheel ALL=(ALL) NOPASSWD: ALL"
     line: "%wheel ALL=(ALL) NOPASSWD: ALL"
     validate: visudo -cf %s
+  when: ansible_facts['distribution'] == "Archlinux"
 
 - name: Copy ssh key
   ansible.posix.authorized_key:
     user: "{{ host.user.wheel.name }}"
     key: "{{ lookup('file', '~/.ssh/id_dsa.pub') }}"
+  when: ansible_facts['distribution'] == "Archlinux"

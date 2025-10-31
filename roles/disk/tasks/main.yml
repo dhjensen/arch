@@ -3,6 +3,7 @@
     set -o pipefail
     echo -e "g\nw" | fdisk "{{ host.disk.dev }}"
   changed_when: true
+  when: ansible_facts['distribution'] == "Archlinux"
 
 - name: Create partitions
   ansible.builtin.shell: |
