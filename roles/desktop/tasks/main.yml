@@ -32,7 +32,6 @@
       - xdg-desktop-portal
       - xdg-desktop-portal-kde
       - flatpak
-      - bitwarden
       - hyfetch
       - macchina
       - libpcap
@@ -65,9 +64,10 @@
       - anydesk-bin
       - htpasswd
       # - proton-mail # Build fails
-      - joplin-desktop
+      # - joplin-desktop # Build tage too many system resources
       - onlyoffice-bin
       - gitkraken
+      - proton-pass-bin
   become: true
   become_user: "{{ host.user.wheel.name }}"
 
@@ -76,7 +76,7 @@
     name:
       - me.proton.Mail
       # - com.axosoft.GitKraken
-      # - net.cozic.joplin_desktop
+      - net.cozic.joplin_desktop
       # - org.onlyoffice.desktopeditors
     state: present
 
@@ -142,8 +142,6 @@
   with_items:
     - src: etc/sddm.conf.d/wayland.conf
       dest: /etc/sddm.conf.d/
-    - src: var/lib/AccountsService/users/user
-      dest: /var/lib/AccountsService/users/{{ host.user.wheel.name }}
     - src: lumo.png
       dest: /usr/share/pixmaps/lumo-pwa.png
     - src: lumo.desktop
