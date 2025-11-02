@@ -22,13 +22,12 @@
 - name: Laptop
   hosts:
     - dhj-laptop
-    - local
   gather_facts: true
   roles:
     - { role: disk, tags: disk }
     - { role: boot, tags: boot }
     - { role: alsa, tags: alsa }
-    - { role: system_extra, tags: system_extra }
+    - { role: system_extra, tags: system }
     - { role: geerlingguy.docker, tags: docker }
     - { role: docker, tags: docker }
     - { role: virtualization, tags: virt}
