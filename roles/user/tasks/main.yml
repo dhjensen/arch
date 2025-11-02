@@ -24,9 +24,3 @@
     line: "%wheel ALL=(ALL) NOPASSWD: ALL"
     validate: visudo -cf %s
   when: ansible_facts['distribution'] == "Archlinux"
-
-- name: Copy ssh key
-  ansible.posix.authorized_key:
-    user: "{{ host.user.wheel.name }}"
-    key: "{{ lookup('file', '~/.ssh/id_dsa.pub') }}"
-  when: ansible_facts['distribution'] == "Archlinux"

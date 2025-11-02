@@ -44,6 +44,8 @@
       - bluez-utils
       - fprintd
       - tuned-ppd
+      - steam
+      - winetricks
 
 - name: Install AUR packages
   kewlfft.aur.aur:
@@ -51,7 +53,7 @@
       - evdi-dkms
       - displaylink
       - yay
-      - google-chrome
+      - librewolf-bin
       - ventoy-bin
       - vagrant
       - infisical-bin
@@ -68,6 +70,8 @@
       - onlyoffice-bin
       - gitkraken
       - proton-pass-bin
+      - protonup-qt
+      - protontricks
   become: true
   become_user: "{{ host.user.wheel.name }}"
 

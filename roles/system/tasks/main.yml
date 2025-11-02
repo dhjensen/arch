@@ -27,7 +27,9 @@
 
 - name: Set locale
   community.general.locale_gen:
-    name: "{{ host.system.locale }}"
+    name:
+      - en_US.UTF-8
+      - "{{ host.system.locale }}"
   when: ansible_facts['distribution'] == "Archlinux"
 
 - name: Set LANG variable
