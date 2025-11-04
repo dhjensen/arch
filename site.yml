@@ -1,5 +1,6 @@
 - name: Truenas
   hosts:
+    - vagrant-01
     - node-01
     - node-02
     - node-03

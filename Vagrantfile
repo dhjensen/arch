@@ -5,7 +5,7 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
   config.vm.synced_folder ".", "/vagrant", disabled: true
 
   NODE_COUNT = 4
-  BASE_NAME  = "vagrant-node-"
+  BASE_NAME  = "vagrant-"
   MEMORY_MB  = 4096
   CPUS       = 2
   DATA_DISK  = "10G"
