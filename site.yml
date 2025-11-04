@@ -1,21 +1,11 @@
-- name: All
-  hosts: all
-  gather_facts: true
-  roles:
-    - { role: system, tags: system }
-    - { role: user, tags: user }
-  become: true
-
 - name: Truenas
   hosts:
     - node-01
     - node-02
     - node-03
     - node-04
-    - vagrant-node-01
   gather_facts: true
   roles:
-    # - { role: disk, tags: disk }
     - { role: truenas, tags: truenas }
   become: true
 

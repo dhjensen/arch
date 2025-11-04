@@ -54,6 +54,8 @@
       - displaylink
       - yay
       - librewolf-bin
+      # Compiling ladybird takes up to much memmeory
+      # - ladybird
       - ventoy-bin
       - vagrant
       - infisical-bin
@@ -66,7 +68,7 @@
       - anydesk-bin
       - htpasswd
       # - proton-mail # Build fails
-      # - joplin-desktop # Build tage too many system resources
+      # - joplin-desktop # Build take too many system resources
       - onlyoffice-bin
       - gitkraken
       - proton-pass-bin
@@ -79,9 +81,7 @@
   community.general.flatpak:
     name:
       - me.proton.Mail
-      # - com.axosoft.GitKraken
       - net.cozic.joplin_desktop
-      # - org.onlyoffice.desktopeditors
     state: present
 
 - name: Install nodejs packages
@@ -146,12 +146,6 @@
   with_items:
     - src: etc/sddm.conf.d/wayland.conf
       dest: /etc/sddm.conf.d/
-    - src: lumo.png
-      dest: /usr/share/pixmaps/lumo-pwa.png
-    - src: lumo.desktop
-      dest: /usr/share/applications/lumo-pwa.desktop
-    - src: lumo.service
-      dest: "/home/{{ host.user.wheel.name }}/.config/systemd/user"
 
 - name: Enable services
   ansible.builtin.systemd_service:

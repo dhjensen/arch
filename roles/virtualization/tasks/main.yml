@@ -117,8 +117,6 @@
       scope: system
     - service: virtstoraged.service
       scope: system
-    - service: winapps-launcher.service
-      scope: user
   become: true
   become_user: "{{ host.user.wheel.name }}"
   notify: Reboot
