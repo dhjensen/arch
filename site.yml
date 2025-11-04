@@ -1,35 +1,27 @@
-- name: All
-  hosts: all
+- name: Truenas
+  hosts:
+    - node-01
+    - node-02
+    - node-03
+    - node-04
+  gather_facts: true
   roles:
-    - { role: system, tags: system }
-    - { role: user, tags: user }
+    - { role: truenas, tags: truenas }
   become: true
 
 - name: Laptop
   hosts:
     - dhj-laptop
-    - local
   gather_facts: true
   roles:
     - { role: disk, tags: disk }
     - { role: boot, tags: boot }
     - { role: alsa, tags: alsa }
-    - { role: system_extra, tags: system_extra }
+    - { role: system_extra, tags: system }
     - { role: geerlingguy.docker, tags: docker }
     - { role: docker, tags: docker }
     - { role: virtualization, tags: virt}
     - { role: program, tags: program }
     - { role: desktop, tags: desktop }
     - { role: cups, tags: cups }
-  become: true
-
-- name: Core
-  hosts: core
-  roles:
-    - { role: disk, tags: disk }
-    - { role: boot, tags: boot }
-    - { role: geerlingguy.docker, tags: docker }
-    - { role: docker, tags: docker }
-    - { role: home_assistant, tags: home_assistant }
-    - { role: zigbee2mqtt, tags: zigbee2mqtt }
   become: true
